@@ -5,9 +5,11 @@ import cookieParser from "cookie-parser";
 import { connection } from "./database/connection.js";
 import { errorMiddleware } from "./middlewares/error.js";
 import fileUpload from "express-fileupload";
+import userRouter  from "./routes/userRouter.js";
 
 const app = express();
 config({path:"./config/config.env"})
+
 
 app.use(cors({
     origin: [process.env.FRONTEND_URL],
@@ -26,6 +28,8 @@ app.use(
     tempFileDir: "/tmp/",
 })
 );
+
+app.use("/api/v1/user", userRouter);
 
 connection();
 
