@@ -106,3 +106,60 @@ export const logout= catchAsyncErrors(async(req, res, next )=>{
         message: "Logged out successfully."
     })
 })
+
+export const getUser = catchAsyncErrors(async(req, res,next) => {
+  const user= req.user;
+  res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+export const updateProfile = catchAsyncErrors(async(req, res, next)=> {
+    const newUserData= {
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        address:req.body.address,
+        coverLetter: req.body.coverLetter,
+        niches:{
+            firstNiche: req.body.firstNiche,
+            secondNiche: req.body.secondNiche,
+            thirdNiche: req.body.thirdNiche,
+        }
+    }
+const {firstNiche, secondNiche, thirdNiche} = newUserData.niches
+
+if(req.user.role === "Job Seeker" && (!firstNiche || !secondNiche || !thirdNiche)){
+    return next(new ErrorHandler("Please provide your all prefferred job niches.", 400)
+);
+}
+if(req.files){
+    const resume = req.files.resume;
+    if(resume){
+        const currentResumeId = req.user.resume.public_id;
+        if(currentResumeId){
+            await cloudinary.uploader.destroy(currentResumeId);
+        }
+
+        const newResume = await cloudinary.uploader.upload(resume.tempFilePath,{
+            folder: "Job_Seeker_Resume"
+        });
+        newUserData.resume = {
+            public_id: newResume.public_id,
+            url: newResume.secure_url,
+        };
+    }
+}
+
+const user = await User.findByIdAndUpdate(req.user.id, newUserData,{
+    new: true,
+    runValidators:true,
+    useFindAndModify: false,
+});
+res.status(200).json({
+    success: true,
+    user,
+    message: "Profile updated."
+})
+})
