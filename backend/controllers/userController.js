@@ -2,6 +2,7 @@ import {catchAsyncErrors} from "../middlewares/catchAsyncError.js";
 import ErrorHandler from "../middlewares/error.js";
 import { User } from "../models/userSchema.js";
 import {v2 as cloudinary} from "cloudinary";
+import {sendToken} from "../utils/jwtToken.js"
 
 export const register = catchAsyncErrors(async(req, res, next)=>{
     try {
@@ -69,11 +70,39 @@ export const register = catchAsyncErrors(async(req, res, next)=>{
             }
         }
         const user = await User.create(userData);
-        res.status(201).json({
-            success: true,
-            message:"User Registered.",
-        });
+        sendToken(user, 201, res, "user Registered.")
     } catch (error) {
         next(error);
     }
 });
+
+export const login = catchAsyncErrors(async(req, res, next)=>{
+    const {role, email,password} = req.body;
+    if(!role || !email || !password) {
+        return next(
+            new ErrorHandler("Email, password and role are required.", 400)
+        );
+    }
+    const user= await User.findOne({email}).select("+password");
+    if(!user){
+        return next(new ErrorHandler("Invalid email or password.", 400))
+    }
+    const isPasswordMatched =await user.comparePassword(password);
+    if(!isPasswordMatched){
+        return next(new ErrorHandler("Invalid email or password.", 400))
+    }
+    if(user.role !== role){
+        return next(new ErrorHandler("Invalid user role.",400))
+    }
+    sendToken(user, 200, res, "User logged in successfully.");
+});
+
+export const logout= catchAsyncErrors(async(req, res, next )=>{
+    res.status(200).cookie("token", "",  {
+        expires:new Date(Date.now()), 
+         httpOnly: true,
+        }).json({
+        success: true,
+        message: "Logged out successfully."
+    })
+})
