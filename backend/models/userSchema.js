@@ -25,8 +25,8 @@ const userSchema = new mongoose.Schema({
     },
     niches:{
         firstNiche:String,
-        secondNiches: String,
-        thirdNiches: String
+        secondNiche: String,
+        thirdNiche: String
     },
     password:{
         type: String,

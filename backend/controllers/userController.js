@@ -49,7 +49,7 @@ export const register = catchAsyncErrors(async(req, res, next)=>{
             const {resume}= req.files;
             if(resume){
                 try {
-                    const cloudinaryResponse =await cloudinary.uploader.upload(resume.tempFilesPath,
+                    const cloudinaryResponse =await cloudinary.uploader.upload(resume.tempFilePath,
                         {folder: "Job_Seeker_Resume"}
                     ) 
                     if(!cloudinaryResponse || cloudinaryResponse.error){
