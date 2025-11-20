@@ -1,5 +1,6 @@
-import { catchAsyncErrors } from "../middlewares/catchAsyncError";
-import ErrorHandler from "../middlewares/error";
+import { catchAsyncErrors } from "../middlewares/catchAsyncError.js";
+import ErrorHandler from "../middlewares/error.js";
+import { Job } from "../models/jobSchema.js";
 
 export const postJob = catchAsyncErrors(async (req, res, next) => {
     const {
@@ -13,9 +14,9 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
         offers,
         salary,
         hiringMultipleCandidates,
-        personalWebsite,
+        personalWebsiteTitle,
+        personalWebsiteUrl,
         jobNiche,
-        newsLetterSent,
     } = req.body;
 
     if (
@@ -40,5 +41,28 @@ export const postJob = catchAsyncErrors(async (req, res, next) => {
             )
         );
     }
-
+    const postedBy = req.user._id;
+    const job = await Job.create({
+         title,
+        jobType,
+        location,
+        companyName,
+        introduction,
+        responsibilities,
+        qualifications,
+        offers,
+        salary,
+        hiringMultipleCandidates,
+        personalWebsite:{
+            title: personalWebsiteTitle,
+             url: personalWebsiteUrl,
+        },
+        jobNiche,
+        postedBy,
+    }) 
+    res.status(201).json({
+        success: true,
+        message: "Job posted successfully.",
+        job,
+    })
 });
