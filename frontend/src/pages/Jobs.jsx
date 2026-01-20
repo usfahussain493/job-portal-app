@@ -13,7 +13,7 @@ const Jobs = () => {
   const [selectedNiche, setSelectedNiche]= useState("");
   const [searchKeyword, setSearchKeyword]= useState("");
 
-  const {jobs, loading, error} = useSelector(state=> state.jobs);
+  const { loading, error} = useSelector(state=> state.jobs);
 
   const handleCityChange = (city) => {
   setCity(city);
@@ -26,13 +26,14 @@ const Jobs = () => {
   };
 
   const dispatch = useDispatch();
+
   useEffect(()=> {
    if(error){
     toast.error(error);
-    dispatch(clearAllJobErrors())
+    dispatch(clearAllJobErrors());
    }
-   dispatch(fetchJobs(city, niche, searchKeyword))
-  },[dispatch, error, city, niche]);
+   dispatch(fetchJobs(city, niche, searchKeyword));
+  },[dispatch, error, city, niche, searchKeyword]);
 
   const handleSearch= () => {
     dispatch(fetchJobs(city, niche, searchKeyword));
@@ -57,7 +58,31 @@ const Jobs = () => {
     "Sheikhupura",
     "Mandi Bahauddin",
     "Larkana"
-  ]
+  ];
+
+
+  const nichesArray = [
+    "Software Development",
+    "Web Development",
+    "Cybersecurity",
+    "Data Science",
+    "Artificial Intelligence",
+    "Cloud Computing",
+    "DevOps",
+    "Mobile App Development",
+    "Blockchain",
+    "Database Administration",
+    "Network Administration",
+    "UI/UX Design",
+    "Game Development",
+    "IoT (Internet of Things)",
+    "Big Data",
+    "Machine Learning",
+    "IT Project Management",
+    "IT Support and Helpdesk",
+    "System Administration",
+    "IT Consulting",
+  ];
   return (
     <>
       
@@ -77,6 +102,35 @@ const Jobs = () => {
             <div className='filter-bar'>
               <div className='cities'>
                 <h2>Filter Job By City</h2>
+                {
+                  cities.map((city, index)=>(
+                    <div key={index}>
+                      <input 
+                      type="radio" 
+                      id={city} 
+                      name='city' 
+                      value={city} 
+                      checked={selectedCity === city} 
+                      onChange={()=> handleCityChange(city)}/>
+                      <label htmlFor={city}>{city}</label>
+                    </div>
+                  ))}
+              </div>
+              <div className='cities'>
+                <h2>Filter Job By Niche</h2>
+                {nichesArray.map((niche, index)=>(
+                    <div key={index}>
+                      <input 
+                      type="radio" 
+                      id={niche} 
+                      name='niche' 
+                      value={niche} 
+                      checked={selectedNiche === niche} 
+                      onChange={()=> handleNicheChange(niche)}
+                      />
+                      <label htmlFor={niche}>{niche}</label>
+                    </div>
+                  ))}
               </div>
             </div>
            </div>
