@@ -61,12 +61,15 @@ export const fetchJobs = (city, niche, searchKeyword= "")=>async(dispatch)=>{
         dispatch(jobSlice.actions.successForAllJobs(response.data.jobs))
         dispatch(jobSlice.actions.clearAllErrors());
     } catch (error) {
-        dispatch(jobSlice.actions.failureForAllJobs(error.response.data.message));
+        dispatch(jobSlice.actions.failureForAllJobs(
+            error.response?.data?.message || "Something Went Wrong" 
+        )
+    );
     }
 };
 
 export const clearAllJobErrors = ()=>(dispatch)=>{
-  dispatch(jobSlice.actions.clearAllJobErrors())
+  dispatch(jobSlice.actions.clearAllErrors())
 }
 
 export const resetJobSlice = ()=>(dispatch)=>{
