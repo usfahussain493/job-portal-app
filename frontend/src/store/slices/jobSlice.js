@@ -76,4 +76,6 @@ export const resetJobSlice = ()=>(dispatch)=>{
     dispatch(jobSlice.actions.resetjobSlice());
 };
 
+
+
 export default jobSlice.reducer;
